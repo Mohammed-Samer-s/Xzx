@@ -1,0 +1,94 @@
+import tkinter as tk
+
+def click_button(value):
+    current = entry.get()
+    entry.delete(0, tk.END)
+    entry.insert(0, current + str(value))
+
+def clear_entry():
+    entry.delete(0, tk.END)
+
+def calculate():
+    try:
+        expression = entry.get().replace('÷', '/')
+        result = eval(expression)
+        entry.delete(0, tk.END)
+        entry.insert(0, result)
+    except Exception as e:
+        entry.delete(0, tk.END)
+        entry.insert(0, "Error")
+
+def backspace():
+    current = entry.get()
+    entry.delete(0, tk.END)
+    entry.insert(0, current[:-1])
+
+# إعداد نافذة التطبيق
+window = tk.Tk()
+window.title("Calculator")
+
+# إعداد حقل الإدخال
+entry = tk.Entry(window, width=16, font=('Arial', 32), borderwidth=2, relief="solid", bg="#ffffff", fg="#000000")
+entry.grid(row=0, column=0, columnspan=4, padx=10, pady=(20, 10), sticky="nsew")
+
+# إعداد الأزرار مع الألوان
+button_colors = {
+    'numbers': {"bg": "#b3cde0", "fg": "#003366"},
+    'operators': {"bg": "#ffcc00", "fg": "#000000"},
+    'special': {"bg": "#ff6666", "fg": "#ffffff"},
+    'equal': {"bg": "#66cc66", "fg": "#ffffff"}
+}
+
+buttons = [
+    ('C', 3, 'special'), ('⌫', 3, 'special'), ('÷', 3, 'operators'), ('*', 3, 'operators'),
+    ('7', 2, 'numbers'), ('8', 2, 'numbers'), ('9', 2, 'numbers'), ('-', 2, 'operators'),
+    ('4', 2, 'numbers'), ('5', 2, 'numbers'), ('6', 2, 'numbers'), ('+', 2, 'operators'),
+    ('1', 2, 'numbers'), ('2', 2, 'numbers'), ('3', 2, 'numbers'), ('=', 2, 'equal'),
+    ('0', 2, 'numbers'), ('.', 2, 'numbers'), ('', 2, 'numbers'), ('', 2, 'numbers')
+]
+
+row_val = 1
+col_val = 0
+
+for button, height, btn_type in buttons:
+    if button == 'C':
+        cmd = clear_entry
+    elif button == '=':
+        cmd = calculate
+    elif button == '⌫':
+        cmd = backspace
+    elif button == '':
+        continue
+    else:
+        cmd = lambda x=button: click_button(x)
+
+    tk.Button(
+        window,
+        text=button,
+        width=4,
+        height=height,
+        font=('Arial', 16),
+        command=cmd,
+        bg=button_colors[btn_type]["bg"],
+        fg=button_colors[btn_type]["fg"]
+    ).grid(row=row_val, column=col_val, padx=2, pady=2, sticky="nsew")
+    
+    col_val += 1
+    if col_val > 3:
+        col_val = 0
+        row_val += 1
+
+# تعديل خصائص التخطيط لتوسيع الصفوف والأعمدة
+window.grid_rowconfigure(0, weight=2)
+for i in range(4):
+    window.grid_columnconfigure(i, weight=1)
+
+for i in range(1, row_val + 1):
+    window.grid_rowconfigure(i, weight=1)
+
+# إضافة رسالة تم صنع البرنامج بواسطة محمد سامر
+footer_label = tk.Label(window, text="The program was created by: Mohamed Samer", font=('Arial', 8), fg="#555555")
+footer_label.grid(row=row_val + 1, column=0, columnspan=4, pady=(10, 10), sticky="nsew")
+
+# تشغيل التطبيق
+window.mainloop()
